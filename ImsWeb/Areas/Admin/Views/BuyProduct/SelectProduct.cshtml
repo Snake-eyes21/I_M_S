@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Ims.Models.Product>
+
+<h2>Select a Product</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.ProductName</td>
+                <td>₹@product.UnitPrice</td>
+                <td>@product.QuantityStock</td>
+                <td>
+                    <a asp-action="OrderForm" asp-route-productId="@product.ProductId" asp-route-supplierId="@ViewBag.SupplierId" class="btn btn-success">Buy Now</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Back to Suppliers</a>

@@ -39,6 +39,10 @@ namespace Ims.Models
         public int CategoryId { get; set; }
         [ValidateNever]
         public Category Category { get; set; }
+        [ForeignKey("Supplier")]
+        public int SupplierId { get; set; }
+        
+        public Supplier Supplier { get; set; }
 
         [ValidateNever]
         public string? ImageUrl {  get; set; }

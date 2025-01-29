@@ -1,0 +1,40 @@
+﻿@model Ims.Models.Product
+
+<h2>Order Product</h2>
+
+<form asp-action="ProcessOrder" method="post">
+    <input type="hidden" name="productId" value="@Model.ProductId" />
+    <input type="hidden" name="supplierId" value="@Model.SupplierId" />
+
+    <table class="table">
+        <tr>
+            <th>Product Name:</th>
+            <td>@Model.ProductName</td>
+        </tr>
+        <tr>
+            <th>Price per Unit:</th>
+            <td>₹@Model.UnitPrice</td>
+        </tr>
+        <tr>
+            <th>Credit Limit:</th>
+            <td>₹@ViewBag.CreditLimit</td>
+        </tr>
+        <tr>
+            <th>Outstanding Balance:</th>
+            <td>₹@ViewBag.OutstandingBalance</td>
+        </tr>
+        <tr>
+            <th>Max Purchase Allowed:</th>
+            <td>₹@ViewBag.MaxPurchaseAmount</td>
+        </tr>
+        <tr>
+            <th>Enter Quantity:</th>
+            <td>
+                <input type="number" name="quantity" min="1"  class="form-control" required />
+            </td>
+        </tr>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Buy Now</button>
+    <a asp-action="SelectProduct" asp-route-supplierId="@Model.SupplierId" class="btn btn-secondary">Back to Products</a>
+</form>

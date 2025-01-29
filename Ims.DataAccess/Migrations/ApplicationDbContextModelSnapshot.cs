@@ -41,27 +41,40 @@ namespace Ims.DataAccess.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            CategoryId = 1,
-                            CategoryName = "Snacks",
-                            Description = "Time to munch"
-                        },
-                        new
-                        {
-                            CategoryId = 2,
-                            CategoryName = "Stationary",
-                            Description = "Time to study"
-                        },
-                        new
-                        {
-                            CategoryId = 3,
-                            CategoryName = "Electronics",
-                            Description = "Gotta get that"
-                        });
+            modelBuilder.Entity("Ims.Models.CreditManagement", b =>
+                {
+                    b.Property<int>("CreditId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CreditId"));
+
+                    b.Property<decimal>("CreditLimit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("OutstandingBalance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CreditId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CreditManagements");
                 });
 
             modelBuilder.Entity("Ims.Models.Order", b =>
@@ -94,13 +107,16 @@ namespace Ims.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Ims.Models.OrderDetail", b =>
                 {
                     b.Property<int>("SerialId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SerialId"));
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -120,7 +136,7 @@ namespace Ims.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderDetails", (string)null);
+                    b.ToTable("OrderDetails");
                 });
 
             modelBuilder.Entity("Ims.Models.Product", b =>
@@ -148,47 +164,19 @@ namespace Ims.DataAccess.Migrations
                     b.Property<int>("ReorderLevel")
                         .HasColumnType("int");
 
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("UnitPrice")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ProductId");
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products", (string)null);
+                    b.HasIndex("SupplierId");
 
-                    b.HasData(
-                        new
-                        {
-                            ProductId = 1,
-                            CategoryId = 1,
-                            ImageUrl = "",
-                            ProductName = "Sample Product 1",
-                            QuantityStock = 100,
-                            ReorderLevel = 10,
-                            UnitPrice = 10.99m
-                        },
-                        new
-                        {
-                            ProductId = 2,
-                            CategoryId = 2,
-                            ImageUrl = "",
-                            ProductName = "Sample Product 2",
-                            QuantityStock = 200,
-                            ReorderLevel = 20,
-                            UnitPrice = 20.99m
-                        },
-                        new
-                        {
-                            ProductId = 5,
-                            CategoryId = 3,
-                            ImageUrl = "",
-                            ProductName = "Sample Product 3",
-                            QuantityStock = 300,
-                            ReorderLevel = 30,
-                            UnitPrice = 30.99m
-                        });
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Ims.Models.Supplier", b =>
@@ -219,7 +207,7 @@ namespace Ims.DataAccess.Migrations
 
                     b.HasKey("SupplierId");
 
-                    b.ToTable("Suppliers", (string)null);
+                    b.ToTable("Suppliers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -452,6 +440,25 @@ namespace Ims.DataAccess.Migrations
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
+            modelBuilder.Entity("Ims.Models.CreditManagement", b =>
+                {
+                    b.HasOne("Ims.Models.Supplier", "Suppliers")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ims.Models.ApplicationUser", "Users")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Suppliers");
+
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("Ims.Models.Order", b =>
                 {
                     b.HasOne("Ims.Models.ApplicationUser", "Users")
@@ -490,7 +497,15 @@ namespace Ims.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Ims.Models.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Category");
+
+                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

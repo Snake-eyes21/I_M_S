@@ -1,0 +1,24 @@
+﻿@model IEnumerable<Ims.Models.Supplier>
+
+<h2>Select a Supplier</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Supplier Name</th>
+            <th>Contact</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var supplier in Model)
+        {
+            <tr>
+                <td>@supplier.SupplierName</td>
+                <td>@supplier.ContactEmail</td>
+                <td>
+                    <a asp-action="SelectProduct" asp-route-supplierId="@supplier.SupplierId" class="btn btn-primary">View Products</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
