@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Ims.Models
 {
@@ -36,8 +37,10 @@ namespace Ims.Models
 
         [ForeignKey("CategoryId")]
         public int CategoryId { get; set; }
+        [ValidateNever]
         public Category Category { get; set; }
 
-        public string ImageUrl {  get; set; }
+        [ValidateNever]
+        public string? ImageUrl {  get; set; }
     }
 }

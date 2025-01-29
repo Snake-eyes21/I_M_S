@@ -19,7 +19,19 @@ namespace Ims.DataAccess.Repository
 
         public void Update(Product obj)
         {
-            _db.Products.Update(obj);
+            var objFromDb = _db.Products.FirstOrDefault(u => u.ProductId == obj.ProductId);
+            if (objFromDb != null)
+            {
+                objFromDb.ProductName = obj.ProductName;
+                objFromDb.UnitPrice = obj.UnitPrice;
+                objFromDb.QuantityStock = obj.QuantityStock;
+                objFromDb.ReorderLevel = obj.ReorderLevel;
+                objFromDb.CategoryId = obj.CategoryId;
+                if (obj.ImageUrl != null)
+                {
+                    objFromDb.ImageUrl = obj.ImageUrl;
+                }
+            }
         }
     }
 }

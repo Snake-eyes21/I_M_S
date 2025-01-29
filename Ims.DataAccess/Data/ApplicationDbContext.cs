@@ -1,9 +1,11 @@
 ﻿using Ims.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ims.DataAccess.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -11,8 +13,18 @@ namespace Ims.DataAccess.Data
 
         public DbSet<Product> Products { get; set; }
 
+        public DbSet<Supplier> Suppliers { get; set; }
+
+        public DbSet<Order> Orders { get; set; }
+
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Category>().HasData(
                 new Category { CategoryId = 1, CategoryName = "Snacks", Description = "Time to munch" },
                 new Category { CategoryId = 2, CategoryName = "Stationary", Description = "Time to study" },

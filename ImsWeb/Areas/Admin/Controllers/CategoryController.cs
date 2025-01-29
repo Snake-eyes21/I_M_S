@@ -1,11 +1,14 @@
 ﻿using Ims.DataAccess.Data;
 using Ims.DataAccess.Repository.IRepository;
 using Ims.Models;
+using Ims.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ImsWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
