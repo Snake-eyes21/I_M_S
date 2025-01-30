@@ -1,4 +1,5 @@
-﻿using Ims.DataAccess.Data;
+﻿using System.Net.Http;
+using Ims.DataAccess.Data;
 using Ims.DataAccess.Repository.IRepository;
 using Ims.Models;
 using Ims.Models.ViewModels;
@@ -6,6 +7,7 @@ using Ims.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 
 namespace ImsWeb.Areas.Admin.Controllers
 {
@@ -15,18 +17,30 @@ namespace ImsWeb.Areas.Admin.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly HttpClient _httpClient;
+        private readonly string _apiBaseUrl = "https://localhost:7214/api/Suppliers";
         public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            _httpClient = new HttpClient();
         }
         public IActionResult Index()
         {
             List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties:"Category").ToList();
             return View(objProductList);
         }
-        public IActionResult Upsert(int? id)
+        public async Task<IActionResult> Upsert(int? id)
         {
+            var response = await _httpClient.GetAsync(_apiBaseUrl);
+            IEnumerable<Supplier> supplierslist = new List<Supplier>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonData = await response.Content.ReadAsStringAsync();
+                supplierslist = JsonConvert.DeserializeObject<IEnumerable<Supplier>>(jsonData);
+            }
+
             ProductVM productVM = new()
             {
                 CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
@@ -34,11 +48,18 @@ namespace ImsWeb.Areas.Admin.Controllers
                     Text = u.CategoryName,
                     Value = u.CategoryId.ToString()
                 }),
+                SupplierList = supplierslist.Select(s => new SelectListItem
+                {
+                    Text = s.SupplierName, // Assuming Supplier has a property called SupplierName
+                    Value = s.SupplierId.ToString() // Assuming Supplier has a property called SupplierId
+                }),
+
                 Product = new Product()
             };
             if (id == null || id == 0)
             {
                 // Create
+                
                 return View(productVM);
             }
             else
@@ -49,8 +70,16 @@ namespace ImsWeb.Areas.Admin.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Upsert(ProductVM productVM, IFormFile? file)
+        public async Task<IActionResult> Upsert(ProductVM productVM, IFormFile? file)
         {
+            var response = await _httpClient.GetAsync(_apiBaseUrl);
+            IEnumerable<Supplier> supplierslist = new List<Supplier>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonData = await response.Content.ReadAsStringAsync();
+                supplierslist = JsonConvert.DeserializeObject<IEnumerable<Supplier>>(jsonData);
+            }
             if (ModelState.IsValid)
             {
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
@@ -97,6 +126,11 @@ namespace ImsWeb.Areas.Admin.Controllers
                 {
                     Text = u.CategoryName,
                     Value = u.CategoryId.ToString()
+                });
+                productVM.SupplierList = supplierslist.Select(s => new SelectListItem
+                {
+                    Text = s.SupplierName, // Assuming Supplier has a property called SupplierName
+                    Value = s.SupplierId.ToString() // Assuming Supplier has a property called SupplierId
                 });
                 return View(productVM);
             }

@@ -62,8 +62,8 @@ namespace ImsWeb.Areas.Admin.Controllers
 
             if (credit == null)
             {
-                ViewBag.ErrorMessage = "You don't have a credit arrangement with this supplier.";
-                return View("ErrorPage");
+                TempData["error"] = "Create Credit with the Supplier.You don't have a credit arrangement with this supplier.";
+                return RedirectToAction("Create", "CreditManagements", new { area = "Admin" });
             }
 
             ViewBag.CreditLimit = credit.CreditLimit;
@@ -86,7 +86,7 @@ namespace ImsWeb.Areas.Admin.Controllers
 
             if (credit == null)
             {
-                TempData["Error"] = "No credit arrangement found.";
+                TempData["error"] = "No credit arrangement found.";
                 return RedirectToAction("Index");
             }
 
@@ -96,7 +96,7 @@ namespace ImsWeb.Areas.Admin.Controllers
             if (totalAmount > availableCredit)
             {
                 int maxQuantity = (int)(availableCredit / product.UnitPrice);
-                TempData["Error"] = $"Not enough credit available. Max quantity you can buy: {maxQuantity}.";
+                TempData["error"] = $"Not enough credit available. Max quantity you can buy: {maxQuantity}.";
                 return RedirectToAction("OrderForm", new { productId, supplierId });
             }
 
@@ -106,7 +106,7 @@ namespace ImsWeb.Areas.Admin.Controllers
             credit.LastUpdated = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Order placed successfully!";
+            TempData["success"] = "Order placed successfully!";
             return RedirectToAction("Index");
         }
     }

@@ -249,8 +249,21 @@ namespace ImsWeb.Areas.Customer.Controllers
 
             _context.OrderDetails.Add(orderDetail);
             await _context.SaveChangesAsync();
+            TempData["success"] = "Order Placed Successfully";
+            return RedirectToAction("UserOrders", "Orders", new { area = "Customer" }); // Redirect after successful order
+        }
 
-            return RedirectToAction("OrderSuccess"); // Redirect after successful order
+        public async Task<IActionResult> UserOrders()
+        {
+            var user = await _usermanager.GetUserAsync(User);
+            var userId = user.Id;
+            var orders = await _context.Orders
+                                .Include(o => o.OrderDetails)
+                                    .ThenInclude(od => od.Products)
+                                .Where(o => o.UserId == userId)
+                                .ToListAsync();
+
+            return View(orders);
         }
 
 

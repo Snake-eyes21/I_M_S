@@ -26,7 +26,10 @@ namespace ImsWeb.Areas.Admin.Controllers
         // GET: Admin/CreditManagements
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.CreditManagements.Include(c => c.Suppliers).Include(c => c.Users);
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
+            var applicationDbContext = _context.CreditManagements.Include(c => c.Suppliers).Include(c => c.Users).Where(u=>u.UserId==user.Id);
+
             return View(await applicationDbContext.ToListAsync());
         }
 

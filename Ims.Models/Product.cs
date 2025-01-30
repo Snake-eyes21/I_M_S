@@ -41,7 +41,7 @@ namespace Ims.Models
         public Category Category { get; set; }
         [ForeignKey("Supplier")]
         public int SupplierId { get; set; }
-        
+        [ValidateNever]
         public Supplier Supplier { get; set; }
 
         [ValidateNever]
